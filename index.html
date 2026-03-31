@@ -1066,23 +1066,17 @@ const GeminiClient = {
   },
 
   async _parseError(res) {
-    let msg = '';
-    let status = 0;
+    let raw = '';
     try {
       const data = await res.json();
-      msg = data.error?.message || '';
-      status = data.error?.code || res.status;
-    } catch {}
-    if (res.status === 403 || (res.status === 400 && (msg.toLowerCase().includes('api key') || msg.toLowerCase().includes('api_key')))) {
-      return { type: 'auth', message: 'Clé API non reconnue. Vérifiez qu\'elle est bien copiée depuis <a href="https://aistudio.google.com/apikey" target="_blank">AI Studio</a>.' };
-    }
+      raw = data.error?.message || JSON.stringify(data);
+    } catch { raw = `HTTP ${res.status}`; }
+
     if (res.status === 429) {
-      return { type: 'quota', message: 'Quota journalier atteint. Revenez demain à 9h00 ou vérifiez votre <a href="https://aistudio.google.com/apikey" target="_blank">quota réel sur AI Studio</a>.' };
+      return { type: 'quota', raw, message: 'Quota journalier atteint. Revenez demain à 9h00 ou vérifiez votre <a href="https://aistudio.google.com/apikey" target="_blank">quota réel sur AI Studio</a>.' };
     }
-    if (res.status === 400) {
-      return { type: 'bad_request', message: `Erreur API (400)${msg ? ' : ' + msg : ''}` };
-    }
-    return { type: 'network', message: 'Connexion impossible. Vérifiez votre réseau et réessayez.' + (msg ? ` (${msg})` : '') };
+    // Pour tout autre erreur, on expose le message brut
+    return { type: `http_${res.status}`, raw, message: `Erreur ${res.status} : ${raw}` };
   }
 };
 
@@ -1393,7 +1387,7 @@ async function generateManual() {
     document.getElementById('audio-area').style.display = 'none';
     document.getElementById('btn-download').style.display = 'none';
     document.getElementById('audio-error').style.display = 'block';
-    document.getElementById('audio-error-detail').textContent = err.message || JSON.stringify(err);
+    document.getElementById('audio-error-detail').textContent = err.raw || err.message || JSON.stringify(err);
     setProgressState('progress-audio', 'waiting');
   }
 
@@ -1538,7 +1532,7 @@ async function generate() {
     document.getElementById('audio-area').style.display = 'none';
     document.getElementById('btn-download').style.display = 'none';
     document.getElementById('audio-error').style.display = 'block';
-    document.getElementById('audio-error-detail').textContent = err.message || JSON.stringify(err);
+    document.getElementById('audio-error-detail').textContent = err.raw || err.message || JSON.stringify(err);
   }
 
   // Show result
