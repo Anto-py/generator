@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dialogue Studio — Générateur de dialogues pédagogiques</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --retro-teal:   #127676;
+  --retro-orange: #E4632E;
+  --retro-jaune:  #E3A535;
+  --retro-ink:    #0D1617;
+  --retro-paper:  #F2EFE6;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--retro-ink);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--retro-ink);
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, .title-font {
+  font-family: 'Oswald', Impact, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.page-frame {
+  background: var(--retro-paper);
+  border: 4px solid var(--retro-orange);
+  min-height: calc(100vh - 24px);
+  margin: 12px;
+  padding: 2rem 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Coins floraux */
+.page-frame::before,
+.page-frame::after {
+  content: '';
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  opacity: 0.15;
+  pointer-events: none;
+  border: 3px solid var(--retro-teal);
+}
+.page-frame::before {
+  top: 8px; left: 8px;
+  border-right: none; border-bottom: none;
+  border-radius: 12px 0 0 0;
+}
+.page-frame::after {
+  bottom: 8px; right: 8px;
+  border-left: none; border-top: none;
+  border-radius: 0 0 12px 0;
+}
+
+.container {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+/* App header */
+.app-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.app-header h1 {
+  font-size: 2.2rem;
+  color: var(--retro-teal);
+  margin-bottom: 0;
+  font-weight: 700;
+}
+.app-header .subtitle {
+  font-family: 'Inter', sans-serif;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--retro-orange);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Séparateurs */
+.separator {
+  text-align: center;
+  margin: 1.5rem 0;
+  position: relative;
+}
+.separator::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--retro-teal), transparent);
+}
+.separator span {
+  position: relative;
+  background: var(--retro-paper);
+  padding: 0 1rem;
+  color: var(--retro-teal);
+  font-size: 1.1rem;
+}
+
+/* Retro card */
+.retro-card {
+  background: var(--retro-paper);
+  border: 3px solid var(--retro-teal);
+  border-radius: 24px 8px 24px 8px;
+  box-shadow: inset 0 0 0 2px var(--retro-orange);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Bouton pill */
+.retro-btn-pill {
+  display: inline-flex;
+  border-radius: 50px;
+  border: 3px solid var(--retro-teal);
+  overflow: hidden;
+  cursor: pointer;
+  background: none;
+  padding: 0;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.retro-btn-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(18,118,118,0.25);
+}
+.retro-btn-pill:active { transform: translateY(0); }
+.retro-btn-pill:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.retro-btn-pill-text {
+  background: var(--retro-jaune);
+  color: var(--retro-ink);
+  padding: 0.75rem 2rem;
+  font-family: 'Oswald', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.retro-btn-pill-icon {
+  background: var(--retro-orange);
+  color: var(--retro-paper);
+  width: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+/* Boutons secondaires */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  border: 2px solid var(--retro-teal);
+  border-radius: 50px;
+  padding: 0.5rem 1.2rem;
+  font-family: 'Oswald', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+  color: var(--retro-teal);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-secondary:hover {
+  background: var(--retro-teal);
+  color: var(--retro-paper);
+}
+
+/* Bouton lien texte */
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--retro-orange);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: 'Inter', sans-serif;
+}
+.btn-link:hover { color: var(--retro-teal); }
+
+/* Formulaire */
+.form-group {
+  margin-bottom: 1rem;
+}
+.form-group label {
+  display: block;
+  font-family: 'Oswald', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+  color: var(--retro-teal);
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+}
+.form-group select,
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 2px solid var(--retro-teal);
+  border-radius: 8px;
+  background: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: var(--retro-ink);
+  transition: border-color 0.15s;
+}
+.form-group select:focus,
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--retro-orange);
+  box-shadow: 0 0 0 3px rgba(228,99,46,0.15);
+}
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+}
+.form-row .form-group { flex: 1; }
+
+/* Speakers grid */
+.speakers-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.speaker-row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: end;
+}
+.speaker-row .form-group { margin-bottom: 0; }
+.speaker-row .speaker-name-group { flex: 2; }
+.speaker-row .speaker-voice-group { flex: 1; }
+.speaker-label-tag {
+  display: inline-block;
+  background: var(--retro-teal);
+  color: var(--retro-paper);
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.15rem 0.6rem;
+  border-radius: 20px;
+  margin-bottom: 0.3rem;
+}
+
+/* Quota widget */
+#quota-widget {
+  background: rgba(18,118,118,0.06);
+  border: 2px solid var(--retro-teal);
+  border-radius: 16px;
+  padding: 0.8rem 1rem;
+  margin-bottom: 1.5rem;
+}
+.quota-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+.quota-title {
+  font-family: 'Oswald', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.85rem;
+  color: var(--retro-teal);
+  font-weight: 600;
+}
+.quota-count {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--retro-ink);
+}
+.quota-bar {
+  height: 8px;
+  background: rgba(18,118,118,0.12);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.4rem;
+}
+.quota-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s, background 0.4s;
+  background: var(--retro-teal);
+}
+.quota-bar-fill.warn { background: var(--retro-jaune); }
+.quota-bar-fill.critical { background: var(--retro-orange); }
+.quota-footer {
+  font-size: 0.75rem;
+  color: rgba(13,22,23,0.6);
+  line-height: 1.4;
+}
+.quota-footer a {
+  color: var(--retro-orange);
+}
+
+/* Screens */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* Screen key */
+#screen-key .welcome-text {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+#screen-key .welcome-text p {
+  color: rgba(13,22,23,0.7);
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+#screen-key .key-input-wrapper {
+  position: relative;
+}
+#screen-key .key-input-wrapper input {
+  padding-right: 3rem;
+}
+.toggle-visibility {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: var(--retro-teal);
+  padding: 4px;
+}
+
+/* Tutorial panel */
+.tutorial-panel {
+  background: rgba(18,118,118,0.05);
+  border: 1px solid var(--retro-teal);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+.tutorial-toggle {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--retro-orange);
+  font-weight: 500;
+}
+.tutorial-toggle .arrow { transition: transform 0.2s; }
+.tutorial-toggle.open .arrow { transform: rotate(180deg); }
+.tutorial-content {
+  display: none;
+  padding: 0 1rem 1rem;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--retro-ink);
+}
+.tutorial-content.open { display: block; }
+.tutorial-content ol {
+  padding-left: 1.2rem;
+  margin: 0.5rem 0;
+}
+.tutorial-content li { margin-bottom: 0.3rem; }
+.tutorial-content a { color: var(--retro-orange); }
+.tutorial-content .security-note {
+  margin-top: 0.8rem;
+  padding: 0.5rem 0.8rem;
+  background: rgba(227,165,53,0.12);
+  border-radius: 8px;
+  font-size: 0.82rem;
+}
+
+/* Progress */
+.progress-area {
+  text-align: center;
+  padding: 2rem 0;
+}
+.progress-step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.95rem;
+}
+.progress-step .spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(18,118,118,0.2);
+  border-top-color: var(--retro-teal);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.progress-step .check {
+  color: var(--retro-teal);
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+.progress-step.waiting { color: rgba(13,22,23,0.35); }
+.progress-step.active { color: var(--retro-ink); font-weight: 500; }
+.progress-step.done { color: var(--retro-teal); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Result dialogue */
+.dialogue-container {
+  margin-bottom: 1.5rem;
+}
+.dialogue-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.3rem;
+  color: var(--retro-teal);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-align: center;
+  margin-bottom: 0.3rem;
+}
+.dialogue-meta {
+  text-align: center;
+  font-size: 0.82rem;
+  color: rgba(13,22,23,0.5);
+  margin-bottom: 1.2rem;
+}
+.dialogue-bubble {
+  padding: 0.8rem 1rem;
+  border-radius: 16px;
+  margin-bottom: 0.6rem;
+  border-left: 4px solid;
+}
+.dialogue-bubble .speaker-name {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.2rem;
+  font-weight: 600;
+}
+.dialogue-bubble .speaker-text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.bubble-speaker-0 {
+  background: rgba(18,118,118,0.12);
+  border-color: var(--retro-teal);
+}
+.bubble-speaker-0 .speaker-name { color: var(--retro-teal); }
+.bubble-speaker-1 {
+  background: rgba(228,99,46,0.10);
+  border-color: var(--retro-orange);
+}
+.bubble-speaker-1 .speaker-name { color: var(--retro-orange); }
+.bubble-speaker-2 {
+  background: rgba(227,165,53,0.12);
+  border-color: var(--retro-jaune);
+}
+.bubble-speaker-2 .speaker-name { color: var(--retro-jaune); }
+.bubble-speaker-3 {
+  background: rgba(13,22,23,0.08);
+  border-color: var(--retro-ink);
+}
+.bubble-speaker-3 .speaker-name { color: var(--retro-ink); }
+
+/* Audio player area */
+.audio-area {
+  margin-bottom: 1.5rem;
+}
+.audio-area audio {
+  width: 100%;
+  margin-bottom: 0.6rem;
+}
+
+/* Actions row */
+.actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+/* Error message */
+.error-msg {
+  background: rgba(228,99,46,0.1);
+  border: 2px solid var(--retro-orange);
+  border-radius: 12px;
+  padding: 1rem;
+  color: var(--retro-ink);
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.error-msg a { color: var(--retro-orange); }
+
+/* Key management in main */
+.key-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+/* Success message */
+.success-msg {
+  text-align: center;
+  color: var(--retro-teal);
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 1rem;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--retro-teal);
+  color: var(--retro-paper);
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px;
+  font-family: 'Oswald', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: transform 0.3s, opacity 0.3s;
+  z-index: 100;
+}
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* Print */
+@media print {
+  body { background: #fff; }
+  .page-frame {
+    border: none;
+    margin: 0;
+    padding: 1rem;
+    min-height: auto;
+  }
+  .page-frame::before, .page-frame::after { display: none; }
+  #quota-widget, #btn-generate, #screen-key,
+  .retro-btn-pill, .key-bar, .actions-row .btn-secondary,
+  .audio-area, .progress-area, .btn-link,
+  .actions-row, #screen-main { display: none !important; }
+  #screen-result { display: block !important; }
+  .retro-card {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+  }
+  .dialogue-bubble {
+    break-inside: avoid;
+    border: 1px solid #ccc;
+    margin-bottom: 8px;
+    padding: 8px;
+    border-radius: 4px;
+  }
+  .speaker-name { font-weight: bold; }
+  .dialogue-title, .dialogue-meta { break-after: avoid; }
+}
+
+/* Responsive */
+@media (max-width: 680px) {
+  .page-frame { padding: 1.5rem 0.8rem; margin: 6px; }
+  .app-header h1 { font-size: 1.6rem; }
+  .form-row { flex-direction: column; gap: 0; }
+  .retro-btn-pill-text { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
+  .retro-btn-pill-icon { width: 44px; }
+  .speaker-row { flex-direction: column; gap: 0.3rem; }
+}
+</style>
+</head>
+<body>
+<div class="page-frame">
+<div class="container">
+
+  <!-- Header -->
+  <header class="app-header">
+    <h1>Dialogue Studio</h1>
+    <p class="subtitle">Générateur de dialogues pédagogiques</p>
+  </header>
+
+  <!-- SCREEN: API Key -->
+  <div id="screen-key" class="screen active">
+    <div class="retro-card">
+      <div class="welcome-text">
+        <h2 style="color:var(--retro-teal); font-size:1.3rem; margin-bottom:0.5rem;">Bienvenue !</h2>
+        <p>Créez des dialogues pédagogiques multilingues avec synthèse vocale, en un clic.</p>
+        <p>Il vous suffit d'une clé API Google gratuite pour commencer.</p>
+      </div>
+
+      <div class="form-group">
+        <label for="api-key-input">Votre clé API Google</label>
+        <div class="key-input-wrapper">
+          <input type="password" id="api-key-input" placeholder="Collez votre clé ici (AIza...)" autocomplete="off">
+          <button class="toggle-visibility" type="button" onclick="toggleKeyVisibility()" aria-label="Afficher/masquer la clé">👁</button>
+        </div>
+      </div>
+
+      <div style="text-align:center; margin-top:1rem;">
+        <button class="retro-btn-pill" onclick="saveKeyAndStart()">
+          <span class="retro-btn-pill-text">Commencer</span>
+          <span class="retro-btn-pill-icon">→</span>
+        </button>
+      </div>
+
+      <div id="key-error" class="error-msg" style="display:none; margin-top:1rem;"></div>
+
+      <!-- Tutorial -->
+      <div class="tutorial-panel">
+        <button class="tutorial-toggle" onclick="toggleTutorial()" type="button">
+          <span>Comment obtenir votre clé API Google gratuite ?</span>
+          <span class="arrow">▼</span>
+        </button>
+        <div class="tutorial-content" id="tutorial-content">
+          <ol>
+            <li>Rendez-vous sur <a href="https://aistudio.google.com" target="_blank" rel="noopener">aistudio.google.com</a></li>
+            <li>Connectez-vous avec votre compte Google</li>
+            <li>Cliquez sur <strong>« Get API Key »</strong> (en haut à gauche)</li>
+            <li>Cliquez sur <strong>« Create API key in new project »</strong></li>
+            <li>Copiez la clé affichée (elle commence par <code>AIza...</code>)</li>
+            <li>Collez-la dans le champ ci-dessus</li>
+          </ol>
+          <div class="security-note">
+            🔒 Votre clé reste sur votre appareil. Elle n'est jamais partagée avec un serveur tiers.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: Main -->
+  <div id="screen-main" class="screen">
+
+    <!-- Key bar -->
+    <div class="key-bar">
+      <button class="btn-link" onclick="forgetKey()">Oublier ma clé API</button>
+    </div>
+
+    <!-- Quota widget -->
+    <div id="quota-widget">
+      <div class="quota-header">
+        <span class="quota-title">⚡ Quota du jour</span>
+        <span class="quota-count" id="quota-count">0 / 10</span>
+      </div>
+      <div class="quota-bar">
+        <div class="quota-bar-fill" id="quota-bar-fill" style="width:0%"></div>
+      </div>
+      <div class="quota-footer">
+        Renouvellement à 9h00 (heure de Bruxelles)<br>
+        Estimation locale — quota réel sur <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">AI Studio</a>
+      </div>
+    </div>
+
+    <div id="quota-exceeded-msg" class="error-msg" style="display:none;">
+      Vous avez atteint votre quota indicatif du jour. Revenez demain à 9h00 ou consultez votre <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">quota réel sur AI Studio</a>.
+      <p style="font-size:0.8rem; margin-top:0.5rem; opacity:0.7;">Ce compteur estime votre utilisation locale. Votre quota réel peut varier.</p>
+    </div>
+
+    <!-- Form -->
+    <div class="retro-card">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="sel-lang">Langue cible</label>
+          <select id="sel-lang">
+            <option value="Français">Français</option>
+            <option value="Anglais">Anglais</option>
+            <option value="Espagnol">Espagnol</option>
+            <option value="Arabe">Arabe</option>
+            <option value="Néerlandais">Néerlandais</option>
+            <option value="Allemand">Allemand</option>
+            <option value="Italien">Italien</option>
+            <option value="Portugais">Portugais</option>
+            <option value="Polonais">Polonais</option>
+            <option value="Russe">Russe</option>
+            <option value="Chinois">Chinois</option>
+            <option value="Japonais">Japonais</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="sel-level">Niveau CECR</label>
+          <select id="sel-level">
+            <option value="A1">A1</option>
+            <option value="A2">A2</option>
+            <option value="B1" selected>B1</option>
+            <option value="B2">B2</option>
+            <option value="C1">C1</option>
+            <option value="C2">C2</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="sel-speakers">Nombre de locuteurs</label>
+          <select id="sel-speakers" onchange="renderSpeakerInputs()">
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="sel-replies">Nombre de répliques</label>
+          <select id="sel-replies">
+            <option value="4">4</option>
+            <option value="6" selected>6</option>
+            <option value="8">8</option>
+            <option value="10">10</option>
+            <option value="12">12</option>
+            <option value="16">16</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="separator"><span>❧</span></div>
+
+      <div class="form-group">
+        <label>Locuteurs</label>
+        <div class="speakers-grid" id="speakers-grid"></div>
+      </div>
+
+      <div class="separator"><span>✿</span></div>
+
+      <div class="form-group">
+        <label for="txt-consigne">Consigne libre</label>
+        <textarea id="txt-consigne" placeholder="Décrivez le thème, le contexte, les contraintes linguistiques souhaitées..."></textarea>
+      </div>
+
+      <div style="text-align:center; margin-top:1.2rem;">
+        <button class="retro-btn-pill" id="btn-generate" onclick="generate()">
+          <span class="retro-btn-pill-text">Générer le dialogue</span>
+          <span class="retro-btn-pill-icon">▶</span>
+        </button>
+      </div>
+
+      <div id="main-error" class="error-msg" style="display:none; margin-top:1rem;"></div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-area" id="progress-area" style="display:none;">
+      <div class="progress-step waiting" id="progress-text">
+        <span class="status-icon"></span>
+        <span>Rédaction du dialogue en cours…</span>
+      </div>
+      <div class="progress-step waiting" id="progress-audio">
+        <span class="status-icon"></span>
+        <span>Synthèse des voix en cours…</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: Result -->
+  <div id="screen-result" class="screen">
+    <div class="success-msg">Votre dialogue est prêt !</div>
+
+    <div class="retro-card">
+      <div class="dialogue-container" id="dialogue-container"></div>
+    </div>
+
+    <div class="audio-area" id="audio-area" style="display:none;">
+      <audio controls id="audio-player"></audio>
+    </div>
+
+    <div id="audio-error" class="error-msg" style="display:none;">
+      La synthèse vocale a échoué. Le texte du dialogue reste disponible ci-dessus.
+    </div>
+
+    <div class="actions-row">
+      <button class="btn-secondary" onclick="copyDialogue()">📋 Copier</button>
+      <button class="btn-secondary" onclick="window.print()">🖨 Imprimer / PDF</button>
+      <button class="btn-secondary" id="btn-download" onclick="downloadWav()" style="display:none;">⬇ Télécharger WAV</button>
+      <button class="btn-secondary" onclick="backToMain()">← Nouveau dialogue</button>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== Storage Manager =====
+const StorageManager = {
+  getKey()    { return localStorage.getItem('gemini_api_key') || ''; },
+  setKey(k)   { localStorage.setItem('gemini_api_key', k); },
+  clearKey()  { localStorage.removeItem('gemini_api_key'); },
+  get(k)      { return localStorage.getItem(k); },
+  set(k, v)   { localStorage.setItem(k, v); },
+};
+
+// ===== Quota Tracker =====
+const QuotaTracker = {
+  MAX: 10,
+
+  _getTodayBrussels() {
+    return new Intl.DateTimeFormat('fr-BE', {
+      timeZone: 'Europe/Brussels',
+      year: 'numeric', month: '2-digit', day: '2-digit'
+    }).format(new Date());
+  },
+
+  _checkReset() {
+    const today = this._getTodayBrussels();
+    const stored = StorageManager.get('quota_date');
+    if (stored !== today) {
+      StorageManager.set('quota_count_today', '0');
+      StorageManager.set('quota_date', today);
+    }
+  },
+
+  getToday() {
+    this._checkReset();
+    return parseInt(StorageManager.get('quota_count_today') || '0', 10);
+  },
+
+  getTotal() {
+    return parseInt(StorageManager.get('quota_total_all_time') || '0', 10);
+  },
+
+  increment() {
+    this._checkReset();
+    const today = this.getToday() + 1;
+    const total = this.getTotal() + 1;
+    StorageManager.set('quota_count_today', String(today));
+    StorageManager.set('quota_total_all_time', String(total));
+    return today;
+  },
+
+  isExceeded() {
+    return this.getToday() >= this.MAX;
+  }
+};
+
+// ===== Gemini Client =====
+const GeminiClient = {
+  TEXT_MODEL: 'gemini-2.5-flash-preview-05-20',
+  TTS_MODEL: 'gemini-2.5-flash-preview-tts',
+  BASE: 'https://generativelanguage.googleapis.com/v1beta/models',
+
+  async generateText(apiKey, prompt) {
+    const url = `${this.BASE}/${this.TEXT_MODEL}:generateContent?key=${apiKey}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.8, maxOutputTokens: 2048 }
+      })
+    });
+    if (!res.ok) throw await this._parseError(res);
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) throw { type: 'empty', message: 'Réponse vide du modèle.' };
+    return text;
+  },
+
+  async generateTTS(apiKey, ttsPrompt, speakerConfigs) {
+    const url = `${this.BASE}/${this.TTS_MODEL}:generateContent?key=${apiKey}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: ttsPrompt }] }],
+        generationConfig: {
+          responseModalities: ['AUDIO'],
+          speechConfig: {
+            multiSpeakerVoiceConfig: {
+              speakerVoiceConfigs: speakerConfigs
+            }
+          }
+        }
+      })
+    });
+    if (!res.ok) throw await this._parseError(res);
+    const data = await res.json();
+    const audioData = data.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+    if (!audioData) throw { type: 'tts', message: 'Pas de données audio dans la réponse.' };
+    return audioData;
+  },
+
+  async _parseError(res) {
+    let msg = '';
+    try {
+      const data = await res.json();
+      msg = data.error?.message || '';
+    } catch {}
+    if (res.status === 400 || res.status === 403) {
+      return { type: 'auth', message: 'Clé API non reconnue. Vérifiez qu\'elle est bien copiée depuis <a href="https://aistudio.google.com/apikey" target="_blank">AI Studio</a>.' };
+    }
+    if (res.status === 429) {
+      return { type: 'quota', message: 'Quota journalier atteint. Revenez demain à 9h00 ou vérifiez votre <a href="https://aistudio.google.com/apikey" target="_blank">quota réel sur AI Studio</a>.' };
+    }
+    return { type: 'network', message: 'Connexion impossible. Vérifiez votre réseau et réessayez.' + (msg ? ` (${msg})` : '') };
+  }
+};
+
+// ===== Dialogue Builder =====
+const DialogueBuilder = {
+  buildPrompt(langue, niveau, speakers, consigne, nbRepliques) {
+    const noms = speakers.map(s => s.name).join(', ');
+    return `Tu es un expert en didactique des langues.
+Génère un dialogue pédagogique en ${langue} de niveau ${niveau}.
+Le dialogue implique ${speakers.length} locuteur${speakers.length > 1 ? 's' : ''} : ${noms}.
+Contexte/consigne de l'enseignant : ${consigne || 'Dialogue libre, thème du quotidien.'}
+Nombre de répliques : ${nbRepliques}
+
+RÉPONDS UNIQUEMENT avec un objet JSON valide, sans markdown, sans explication.
+Format exact :
+{
+  "titre": "string",
+  "langue": "${langue}",
+  "niveau": "${niveau}",
+  "locuteurs": [${speakers.map(s => `"${s.name}"`).join(', ')}],
+  "repliques": [
+    {"locuteur": "Prénom", "texte": "..."}
+  ]
+}`;
+  },
+
+  VOICE_MAP: {
+    'F': ['Kore', 'Aoede'],
+    'M': ['Puck', 'Charon']
+  },
+
+  buildTTSPrompt(dialogue, speakers) {
+    const voiceAssign = {};
+    const fCount = { F: 0, M: 0 };
+    speakers.forEach(s => {
+      const g = s.gender;
+      const idx = fCount[g];
+      voiceAssign[s.name] = this.VOICE_MAP[g][idx] || this.VOICE_MAP[g][0];
+      fCount[g]++;
+    });
+
+    const voiceList = speakers.map(s => `${s.name} (voice: ${voiceAssign[s.name]})`).join(', ');
+    const lines = dialogue.repliques.map(r => `${r.locuteur}: ${r.texte}`).join('\n');
+
+    return {
+      prompt: `TTS the following dialogue. Use distinct voices for each speaker.\n${voiceList}\n\n${lines}`,
+      configs: speakers.map(s => ({
+        speaker: s.name,
+        voiceConfig: { prebuiltVoiceConfig: { voiceName: voiceAssign[s.name] } }
+      }))
+    };
+  },
+
+  parseResponse(text) {
+    let cleaned = text.trim();
+    // Remove markdown fences if present
+    if (cleaned.startsWith('```')) {
+      cleaned = cleaned.replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '');
+    }
+    return JSON.parse(cleaned);
+  }
+};
+
+// ===== Audio Player =====
+const AudioPlayer = {
+  blob: null,
+  url: null,
+
+  load(base64) {
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    this.blob = new Blob([bytes], { type: 'audio/wav' });
+    if (this.url) URL.revokeObjectURL(this.url);
+    this.url = URL.createObjectURL(this.blob);
+    return this.url;
+  },
+
+  download(filename) {
+    if (!this.blob) return;
+    const a = document.createElement('a');
+    a.href = this.url;
+    a.download = filename || 'dialogue.wav';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+};
+
+// ===== UI =====
+let currentDialogue = null;
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function toggleKeyVisibility() {
+  const inp = document.getElementById('api-key-input');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function toggleTutorial() {
+  const btn = document.querySelector('.tutorial-toggle');
+  const content = document.getElementById('tutorial-content');
+  btn.classList.toggle('open');
+  content.classList.toggle('open');
+}
+
+function saveKeyAndStart() {
+  const key = document.getElementById('api-key-input').value.trim();
+  if (!key) {
+    showError('key-error', 'Veuillez coller votre clé API.');
+    return;
+  }
+  StorageManager.setKey(key);
+  hideError('key-error');
+  showScreen('screen-main');
+  updateQuotaUI();
+}
+
+function forgetKey() {
+  StorageManager.clearKey();
+  document.getElementById('api-key-input').value = '';
+  showScreen('screen-key');
+}
+
+function renderSpeakerInputs() {
+  const n = parseInt(document.getElementById('sel-speakers').value, 10);
+  const grid = document.getElementById('speakers-grid');
+  const defaultNames = ['Yasmine', 'Tom', 'Sofia', 'Nils'];
+  // Preserve existing values
+  const existing = [];
+  grid.querySelectorAll('.speaker-row').forEach(row => {
+    existing.push({
+      name: row.querySelector('.sp-name')?.value || '',
+      gender: row.querySelector('.sp-gender')?.value || 'F'
+    });
+  });
+
+  let html = '';
+  for (let i = 0; i < n; i++) {
+    const name = existing[i]?.name || defaultNames[i] || `Locuteur ${i + 1}`;
+    const gender = existing[i]?.gender || (i % 2 === 0 ? 'F' : 'M');
+    html += `<div class="speaker-row">
+      <div class="form-group speaker-name-group">
+        <span class="speaker-label-tag">Locuteur ${i + 1}</span>
+        <input class="sp-name" type="text" value="${name}" placeholder="Prénom" aria-label="Prénom du locuteur ${i + 1}">
+      </div>
+      <div class="form-group speaker-voice-group">
+        <label>Voix</label>
+        <select class="sp-gender" aria-label="Genre vocal du locuteur ${i + 1}">
+          <option value="F" ${gender === 'F' ? 'selected' : ''}>Féminin</option>
+          <option value="M" ${gender === 'M' ? 'selected' : ''}>Masculin</option>
+        </select>
+      </div>
+    </div>`;
+  }
+  grid.innerHTML = html;
+}
+
+function getSpeakers() {
+  const rows = document.querySelectorAll('.speaker-row');
+  return Array.from(rows).map(row => ({
+    name: row.querySelector('.sp-name').value.trim() || 'Locuteur',
+    gender: row.querySelector('.sp-gender').value
+  }));
+}
+
+function updateQuotaUI() {
+  const today = QuotaTracker.getToday();
+  const max = QuotaTracker.MAX;
+  const pct = Math.min((today / max) * 100, 100);
+
+  document.getElementById('quota-count').textContent = `${today} / ${max}`;
+
+  const fill = document.getElementById('quota-bar-fill');
+  fill.style.width = pct + '%';
+  fill.className = 'quota-bar-fill';
+  if (pct >= 90) fill.classList.add('critical');
+  else if (pct >= 70) fill.classList.add('warn');
+
+  document.getElementById('quota-exceeded-msg').style.display =
+    QuotaTracker.isExceeded() ? 'block' : 'none';
+}
+
+function setProgressState(id, state) {
+  const el = document.getElementById(id);
+  el.className = 'progress-step ' + state;
+  const icon = el.querySelector('.status-icon');
+  if (state === 'active') icon.innerHTML = '<span class="spinner"></span>';
+  else if (state === 'done') icon.innerHTML = '<span class="check">✓</span>';
+  else icon.innerHTML = '';
+}
+
+function showError(id, html) {
+  const el = document.getElementById(id);
+  el.innerHTML = html;
+  el.style.display = 'block';
+}
+
+function hideError(id) {
+  document.getElementById(id).style.display = 'none';
+}
+
+function showToast(text) {
+  const t = document.getElementById('toast');
+  t.textContent = text;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function renderDialogue(dialogue) {
+  currentDialogue = dialogue;
+  const container = document.getElementById('dialogue-container');
+  const speakerIndex = {};
+  (dialogue.locuteurs || []).forEach((name, i) => { speakerIndex[name] = i; });
+
+  let html = `<div class="dialogue-title">${escapeHtml(dialogue.titre || 'Dialogue')}</div>`;
+  html += `<div class="dialogue-meta">${escapeHtml(dialogue.langue || '')} — Niveau ${escapeHtml(dialogue.niveau || '')}</div>`;
+
+  (dialogue.repliques || []).forEach(r => {
+    const idx = speakerIndex[r.locuteur] ?? 0;
+    const cls = idx % 4;
+    html += `<div class="dialogue-bubble bubble-speaker-${cls}">
+      <div class="speaker-name">${escapeHtml(r.locuteur)}</div>
+      <div class="speaker-text">${escapeHtml(r.texte)}</div>
+    </div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+async function generate() {
+  const apiKey = StorageManager.getKey();
+  if (!apiKey) { forgetKey(); return; }
+
+  hideError('main-error');
+
+  const langue = document.getElementById('sel-lang').value;
+  const niveau = document.getElementById('sel-level').value;
+  const speakers = getSpeakers();
+  const consigne = document.getElementById('txt-consigne').value.trim();
+  const nbRepliques = document.getElementById('sel-replies').value;
+
+  // Show progress
+  const progressArea = document.getElementById('progress-area');
+  progressArea.style.display = 'block';
+  const btn = document.getElementById('btn-generate');
+  btn.disabled = true;
+
+  setProgressState('progress-text', 'active');
+  setProgressState('progress-audio', 'waiting');
+
+  let dialogue;
+
+  // Phase 1: Text
+  try {
+    const prompt = DialogueBuilder.buildPrompt(langue, niveau, speakers, consigne, nbRepliques);
+    const raw = await GeminiClient.generateText(apiKey, prompt);
+    dialogue = DialogueBuilder.parseResponse(raw);
+    setProgressState('progress-text', 'done');
+  } catch (err) {
+    setProgressState('progress-text', 'waiting');
+    progressArea.style.display = 'none';
+    btn.disabled = false;
+    showError('main-error', err.message || 'Erreur lors de la génération du texte.');
+    return;
+  }
+
+  // Increment quota
+  QuotaTracker.increment();
+  updateQuotaUI();
+
+  // Phase 2: Audio
+  setProgressState('progress-audio', 'active');
+  let audioOk = false;
+
+  try {
+    const { prompt: ttsPrompt, configs } = DialogueBuilder.buildTTSPrompt(dialogue, speakers);
+    const audioBase64 = await GeminiClient.generateTTS(apiKey, ttsPrompt, configs);
+    const audioUrl = AudioPlayer.load(audioBase64);
+
+    const player = document.getElementById('audio-player');
+    player.src = audioUrl;
+    document.getElementById('audio-area').style.display = 'block';
+    document.getElementById('btn-download').style.display = '';
+    document.getElementById('audio-error').style.display = 'none';
+    audioOk = true;
+    setProgressState('progress-audio', 'done');
+  } catch (err) {
+    setProgressState('progress-audio', 'waiting');
+    document.getElementById('audio-area').style.display = 'none';
+    document.getElementById('btn-download').style.display = 'none';
+    document.getElementById('audio-error').style.display = 'block';
+  }
+
+  // Show result
+  progressArea.style.display = 'none';
+  btn.disabled = false;
+  renderDialogue(dialogue);
+  showScreen('screen-result');
+}
+
+function copyDialogue() {
+  if (!currentDialogue) return;
+  const lines = [];
+  lines.push(currentDialogue.titre || 'Dialogue');
+  lines.push(`${currentDialogue.langue || ''} — Niveau ${currentDialogue.niveau || ''}`);
+  lines.push('');
+  (currentDialogue.repliques || []).forEach(r => {
+    lines.push(`${r.locuteur} : ${r.texte}`);
+  });
+  navigator.clipboard.writeText(lines.join('\n')).then(() => {
+    showToast('Copié !');
+  }).catch(() => {
+    showToast('Erreur de copie');
+  });
+}
+
+function downloadWav() {
+  const title = currentDialogue?.titre || 'dialogue';
+  const safe = title.replace(/[^a-zA-Z0-9àâéèêëïîôùûüç\s-]/g, '').replace(/\s+/g, '_').substring(0, 40);
+  AudioPlayer.download(safe + '.wav');
+}
+
+function backToMain() {
+  showScreen('screen-main');
+  document.getElementById('audio-error').style.display = 'none';
+}
+
+// ===== Init =====
+(function init() {
+  renderSpeakerInputs();
+
+  const savedKey = StorageManager.getKey();
+  if (savedKey) {
+    showScreen('screen-main');
+    updateQuotaUI();
+  } else {
+    showScreen('screen-key');
+  }
+})();
+</script>
+</body>
+</html>
