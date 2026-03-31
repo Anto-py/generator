@@ -947,7 +947,8 @@ h1, h2, h3, h4, .title-font {
     </div>
 
     <div id="audio-error" class="error-msg" style="display:none;">
-      La synthèse vocale a échoué. Le texte du dialogue reste disponible ci-dessus.
+      La synthèse vocale a échoué. Le texte du dialogue reste disponible ci-dessus.<br>
+      <code id="audio-error-detail" style="font-size:0.78rem; opacity:0.75; word-break:break-all;"></code>
     </div>
 
     <div class="actions-row">
@@ -1387,6 +1388,7 @@ async function generateManual() {
     document.getElementById('audio-area').style.display = 'none';
     document.getElementById('btn-download').style.display = 'none';
     document.getElementById('audio-error').style.display = 'block';
+    document.getElementById('audio-error-detail').textContent = err.message || JSON.stringify(err);
     setProgressState('progress-audio', 'waiting');
   }
 
@@ -1531,6 +1533,7 @@ async function generate() {
     document.getElementById('audio-area').style.display = 'none';
     document.getElementById('btn-download').style.display = 'none';
     document.getElementById('audio-error').style.display = 'block';
+    document.getElementById('audio-error-detail').textContent = err.message || JSON.stringify(err);
   }
 
   // Show result
