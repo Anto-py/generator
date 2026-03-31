@@ -592,6 +592,101 @@ h1, h2, h3, h4, .title-font {
   .dialogue-title, .dialogue-meta { break-after: avoid; }
 }
 
+/* Mode tabs */
+.mode-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1.2rem;
+  border: 2px solid var(--retro-teal);
+  border-radius: 50px;
+  overflow: hidden;
+}
+.mode-tab {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border: none;
+  background: transparent;
+  font-family: 'Oswald', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+  color: var(--retro-teal);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.mode-tab.active {
+  background: var(--retro-teal);
+  color: var(--retro-paper);
+}
+
+/* Repliques editor */
+.repliques-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+.replique-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+.replique-row select {
+  flex: 0 0 120px;
+  padding: 0.5rem 0.5rem;
+  border: 2px solid var(--retro-teal);
+  border-radius: 8px;
+  background: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--retro-ink);
+}
+.replique-row input {
+  flex: 1;
+  padding: 0.5rem 0.7rem;
+  border: 2px solid var(--retro-teal);
+  border-radius: 8px;
+  background: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--retro-ink);
+}
+.replique-row input:focus,
+.replique-row select:focus {
+  outline: none;
+  border-color: var(--retro-orange);
+}
+.btn-remove-rep {
+  background: none;
+  border: 2px solid rgba(228,99,46,0.3);
+  border-radius: 8px;
+  width: 34px;
+  color: var(--retro-orange);
+  cursor: pointer;
+  font-size: 1rem;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.btn-remove-rep:hover { background: rgba(228,99,46,0.1); }
+.btn-add-rep {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: 2px dashed var(--retro-teal);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  color: var(--retro-teal);
+  cursor: pointer;
+  width: 100%;
+  justify-content: center;
+  transition: background 0.15s;
+  margin-top: 0.2rem;
+}
+.btn-add-rep:hover { background: rgba(18,118,118,0.06); }
+
 /* Responsive */
 @media (max-width: 680px) {
   .page-frame { padding: 1.5rem 0.8rem; margin: 6px; }
@@ -690,6 +785,12 @@ h1, h2, h3, h4, .title-font {
       <p style="font-size:0.8rem; margin-top:0.5rem; opacity:0.7;">Ce compteur estime votre utilisation locale. Votre quota réel peut varier.</p>
     </div>
 
+    <!-- Mode tabs -->
+    <div class="mode-tabs">
+      <button class="mode-tab active" id="tab-generate" onclick="switchMode('generate')">✦ Générer</button>
+      <button class="mode-tab" id="tab-manual" onclick="switchMode('manual')">✎ Mon dialogue</button>
+    </div>
+
     <!-- Form -->
     <div class="retro-card">
       <div class="form-row">
@@ -723,48 +824,93 @@ h1, h2, h3, h4, .title-font {
         </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="sel-speakers">Nombre de locuteurs</label>
-          <select id="sel-speakers" onchange="renderSpeakerInputs()">
-            <option value="1">1</option>
-            <option value="2" selected>2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-          </select>
+      <!-- Generate-only fields -->
+      <div id="fields-generate">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="sel-speakers">Nombre de locuteurs</label>
+            <select id="sel-speakers" onchange="_renderSpeakerGrid('sel-speakers','speakers-grid')">
+              <option value="1">1</option>
+              <option value="2" selected>2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="sel-replies">Nombre de répliques</label>
+            <select id="sel-replies">
+              <option value="4">4</option>
+              <option value="6" selected>6</option>
+              <option value="8">8</option>
+              <option value="10">10</option>
+              <option value="12">12</option>
+              <option value="16">16</option>
+            </select>
+          </div>
         </div>
+
+        <div class="separator"><span>❧</span></div>
+
         <div class="form-group">
-          <label for="sel-replies">Nombre de répliques</label>
-          <select id="sel-replies">
-            <option value="4">4</option>
-            <option value="6" selected>6</option>
-            <option value="8">8</option>
-            <option value="10">10</option>
-            <option value="12">12</option>
-            <option value="16">16</option>
-          </select>
+          <label>Locuteurs</label>
+          <div class="speakers-grid" id="speakers-grid"></div>
+        </div>
+
+        <div class="separator"><span>✿</span></div>
+
+        <div class="form-group">
+          <label for="txt-consigne">Consigne libre</label>
+          <textarea id="txt-consigne" placeholder="Décrivez le thème, le contexte, les contraintes linguistiques souhaitées..."></textarea>
+        </div>
+
+        <div style="text-align:center; margin-top:1.2rem;">
+          <button class="retro-btn-pill" id="btn-generate" onclick="generate()">
+            <span class="retro-btn-pill-text">Générer le dialogue</span>
+            <span class="retro-btn-pill-icon">▶</span>
+          </button>
         </div>
       </div>
 
-      <div class="separator"><span>❧</span></div>
+      <!-- Manual entry fields -->
+      <div id="fields-manual" style="display:none;">
+        <div class="form-group" style="margin-bottom:0.8rem;">
+          <label for="manual-title">Titre du dialogue</label>
+          <input type="text" id="manual-title" placeholder="Ex. Au café, Chez le médecin…">
+        </div>
 
-      <div class="form-group">
-        <label>Locuteurs</label>
-        <div class="speakers-grid" id="speakers-grid"></div>
-      </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="sel-speakers-manual">Nombre de locuteurs</label>
+            <select id="sel-speakers-manual" onchange="renderManualSpeakerInputs()">
+              <option value="1">1</option>
+              <option value="2" selected>2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
+          </div>
+        </div>
 
-      <div class="separator"><span>✿</span></div>
+        <div class="separator"><span>❧</span></div>
 
-      <div class="form-group">
-        <label for="txt-consigne">Consigne libre</label>
-        <textarea id="txt-consigne" placeholder="Décrivez le thème, le contexte, les contraintes linguistiques souhaitées..."></textarea>
-      </div>
+        <div class="form-group">
+          <label>Locuteurs &amp; voix</label>
+          <div class="speakers-grid" id="speakers-grid-manual"></div>
+        </div>
 
-      <div style="text-align:center; margin-top:1.2rem;">
-        <button class="retro-btn-pill" id="btn-generate" onclick="generate()">
-          <span class="retro-btn-pill-text">Générer le dialogue</span>
-          <span class="retro-btn-pill-icon">▶</span>
-        </button>
+        <div class="separator"><span>✿</span></div>
+
+        <div class="form-group">
+          <label>Répliques</label>
+          <div class="repliques-editor" id="repliques-editor"></div>
+          <button class="btn-add-rep" onclick="addManualReplique()">+ Ajouter une réplique</button>
+        </div>
+
+        <div style="text-align:center; margin-top:1.2rem;">
+          <button class="retro-btn-pill" id="btn-voice" onclick="generateManual()">
+            <span class="retro-btn-pill-text">Mettre en voix</span>
+            <span class="retro-btn-pill-icon">🔊</span>
+          </button>
+        </div>
       </div>
 
       <div id="main-error" class="error-msg" style="display:none; margin-top:1rem;"></div>
@@ -781,6 +927,7 @@ h1, h2, h3, h4, .title-font {
         <span>Synthèse des voix en cours…</span>
       </div>
     </div>
+
   </div>
 
   <!-- SCREEN: Result -->
@@ -1053,11 +1200,38 @@ function forgetKey() {
   showScreen('screen-key');
 }
 
+let currentMode = 'generate';
+
+function switchMode(mode) {
+  currentMode = mode;
+  document.getElementById('tab-generate').classList.toggle('active', mode === 'generate');
+  document.getElementById('tab-manual').classList.toggle('active', mode === 'manual');
+  document.getElementById('fields-generate').style.display = mode === 'generate' ? '' : 'none';
+  document.getElementById('fields-manual').style.display = mode === 'manual' ? '' : 'none';
+  hideError('main-error');
+  if (mode === 'manual') {
+    renderManualSpeakerInputs();
+    if (document.querySelectorAll('.replique-row').length === 0) {
+      addManualReplique();
+      addManualReplique();
+    }
+  }
+}
+
 function renderSpeakerInputs() {
-  const n = parseInt(document.getElementById('sel-speakers').value, 10);
-  const grid = document.getElementById('speakers-grid');
+  const selId = currentMode === 'manual' ? 'sel-speakers-manual' : 'sel-speakers';
+  const gridId = currentMode === 'manual' ? 'speakers-grid-manual' : 'speakers-grid';
+  if (currentMode === 'manual') {
+    renderManualSpeakerInputs();
+  } else {
+    _renderSpeakerGrid(selId, gridId);
+  }
+}
+
+function _renderSpeakerGrid(selId, gridId) {
+  const n = parseInt(document.getElementById(selId).value, 10);
+  const grid = document.getElementById(gridId);
   const defaultNames = ['Yasmine', 'Tom', 'Sofia', 'Nils'];
-  // Preserve existing values
   const existing = [];
   grid.querySelectorAll('.speaker-row').forEach(row => {
     existing.push({
@@ -1085,14 +1259,125 @@ function renderSpeakerInputs() {
     </div>`;
   }
   grid.innerHTML = html;
+
+  // In manual mode, update replique speaker selects when names change
+  if (gridId === 'speakers-grid-manual') {
+    grid.querySelectorAll('.sp-name').forEach(inp => {
+      inp.addEventListener('input', updateManualSpeakerSelects);
+    });
+  }
+}
+
+function renderManualSpeakerInputs() {
+  _renderSpeakerGrid('sel-speakers-manual', 'speakers-grid-manual');
+  updateManualSpeakerSelects();
+}
+
+function updateManualSpeakerSelects() {
+  const speakers = getManualSpeakers();
+  document.querySelectorAll('.rep-speaker').forEach(sel => {
+    const current = sel.value;
+    sel.innerHTML = speakers.map(s =>
+      `<option value="${escapeHtml(s.name)}" ${s.name === current ? 'selected' : ''}>${escapeHtml(s.name)}</option>`
+    ).join('');
+  });
+}
+
+function getManualSpeakers() {
+  const grid = document.getElementById('speakers-grid-manual');
+  return Array.from(grid.querySelectorAll('.speaker-row')).map(row => ({
+    name: row.querySelector('.sp-name').value.trim() || 'Locuteur',
+    gender: row.querySelector('.sp-gender').value
+  }));
+}
+
+function addManualReplique(speakerName) {
+  const speakers = getManualSpeakers();
+  if (!speakers.length) return;
+  const editor = document.getElementById('repliques-editor');
+  const div = document.createElement('div');
+  div.className = 'replique-row';
+  const speakerOpts = speakers.map(s =>
+    `<option value="${escapeHtml(s.name)}" ${s.name === speakerName ? 'selected' : ''}>${escapeHtml(s.name)}</option>`
+  ).join('');
+  div.innerHTML = `
+    <select class="rep-speaker" onchange="">${speakerOpts}</select>
+    <input class="rep-text" type="text" placeholder="Texte de la réplique…">
+    <button class="btn-remove-rep" onclick="removeManualReplique(this)" title="Supprimer">✕</button>
+  `;
+  editor.appendChild(div);
+}
+
+function removeManualReplique(btn) {
+  const row = btn.closest('.replique-row');
+  if (document.querySelectorAll('.replique-row').length > 1) row.remove();
 }
 
 function getSpeakers() {
-  const rows = document.querySelectorAll('.speaker-row');
+  if (currentMode === 'manual') return getManualSpeakers();
+  const rows = document.querySelectorAll('#speakers-grid .speaker-row');
   return Array.from(rows).map(row => ({
     name: row.querySelector('.sp-name').value.trim() || 'Locuteur',
     gender: row.querySelector('.sp-gender').value
   }));
+}
+
+async function generateManual() {
+  const apiKey = StorageManager.getKey();
+  if (!apiKey) { forgetKey(); return; }
+  hideError('main-error');
+
+  const speakers = getManualSpeakers();
+  const rows = document.querySelectorAll('.replique-row');
+  const repliques = Array.from(rows).map(row => ({
+    locuteur: row.querySelector('.rep-speaker').value,
+    texte: row.querySelector('.rep-text').value.trim()
+  })).filter(r => r.texte);
+
+  if (!repliques.length) {
+    showError('main-error', 'Ajoutez au moins une réplique avec du texte.');
+    return;
+  }
+
+  const titre = document.getElementById('manual-title').value.trim() || 'Mon dialogue';
+  const langue = document.getElementById('sel-lang').value;
+  const niveau = document.getElementById('sel-level').value;
+
+  const dialogue = { titre, langue, niveau, locuteurs: speakers.map(s => s.name), repliques };
+
+  // Show progress (audio only)
+  const progressArea = document.getElementById('progress-area');
+  progressArea.style.display = 'block';
+  const btn = document.getElementById('btn-voice');
+  btn.disabled = true;
+  setProgressState('progress-text', 'done'); // skip text phase visually
+  setProgressState('progress-audio', 'active');
+
+  try {
+    const { prompt: ttsPrompt, configs } = DialogueBuilder.buildTTSPrompt(dialogue, speakers);
+    const audioBase64 = await GeminiClient.generateTTS(apiKey, ttsPrompt, configs);
+    const audioUrl = AudioPlayer.load(audioBase64);
+
+    const player = document.getElementById('audio-player');
+    player.src = audioUrl;
+    document.getElementById('audio-area').style.display = 'block';
+    document.getElementById('btn-download').style.display = '';
+    document.getElementById('audio-error').style.display = 'none';
+    setProgressState('progress-audio', 'done');
+  } catch (err) {
+    document.getElementById('audio-area').style.display = 'none';
+    document.getElementById('btn-download').style.display = 'none';
+    document.getElementById('audio-error').style.display = 'block';
+    setProgressState('progress-audio', 'waiting');
+  }
+
+  QuotaTracker.increment();
+  updateQuotaUI();
+
+  progressArea.style.display = 'none';
+  btn.disabled = false;
+  renderDialogue(dialogue);
+  showScreen('screen-result');
 }
 
 function updateQuotaUI() {
@@ -1265,7 +1550,8 @@ function backToMain() {
 
 // ===== Init =====
 (function init() {
-  renderSpeakerInputs();
+  // Render generate-mode speakers
+  _renderSpeakerGrid('sel-speakers', 'speakers-grid');
 
   const savedKey = StorageManager.getKey();
   if (savedKey) {
