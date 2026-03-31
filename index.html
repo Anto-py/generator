@@ -1041,20 +1041,24 @@ const GeminiClient = {
     return text;
   },
 
-  async generateTTS(apiKey, ttsPrompt, speakerConfigs) {
+  async generateTTS(apiKey, ttsInfo) {
     const url = `${this.BASE}/${this.TTS_MODEL}:generateContent?key=${apiKey}`;
+
+    let speechConfig;
+    if (ttsInfo.mode === 'single') {
+      speechConfig = { voiceConfig: { prebuiltVoiceConfig: { voiceName: ttsInfo.voiceName } } };
+    } else {
+      speechConfig = { multiSpeakerVoiceConfig: { speakerVoiceConfigs: ttsInfo.configs } };
+    }
+
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: ttsPrompt }] }],
+        contents: [{ parts: [{ text: ttsInfo.prompt }] }],
         generationConfig: {
           responseModalities: ['AUDIO'],
-          speechConfig: {
-            multiSpeakerVoiceConfig: {
-              speakerVoiceConfigs: speakerConfigs
-            }
-          }
+          speechConfig
         }
       })
     });
@@ -1109,24 +1113,66 @@ Format exact :
   },
 
   buildTTSPrompt(dialogue, speakers) {
-    const voiceAssign = {};
-    const fCount = { F: 0, M: 0 };
-    speakers.forEach(s => {
-      const g = s.gender;
-      const idx = fCount[g];
-      voiceAssign[s.name] = this.VOICE_MAP[g][idx] || this.VOICE_MAP[g][0];
-      fCount[g]++;
+    // 1 speaker → single voice mode
+    if (speakers.length === 1) {
+      const voice = this.VOICE_MAP[speakers[0].gender][0];
+      const text = dialogue.repliques.map(r => r.texte).join('\n');
+      return { mode: 'single', prompt: text, voiceName: voice };
+    }
+
+    // 2 speakers → multi-speaker direct
+    if (speakers.length === 2) {
+      const fCount = { F: 0, M: 0 };
+      const voiceAssign = {};
+      speakers.forEach(s => {
+        voiceAssign[s.name] = this.VOICE_MAP[s.gender][fCount[s.gender]++] || this.VOICE_MAP[s.gender][0];
+      });
+      const lines = dialogue.repliques.map(r => `${r.locuteur}: ${r.texte}`).join('\n');
+      return {
+        mode: 'multi',
+        prompt: `TTS the following dialogue.\n\n${lines}`,
+        configs: speakers.map(s => ({
+          speaker: s.name,
+          voiceConfig: { prebuiltVoiceConfig: { voiceName: voiceAssign[s.name] } }
+        }))
+      };
+    }
+
+    // 3+ speakers → map to 2 voice slots (F/M)
+    const genders = [...new Set(speakers.map(s => s.gender))];
+    let slot1, slot2, voice1, voice2;
+    if (genders.length >= 2) {
+      slot1 = 'Voix_F'; slot2 = 'Voix_M';
+      voice1 = this.VOICE_MAP['F'][0];
+      voice2 = this.VOICE_MAP['M'][0];
+    } else {
+      // All same gender → use 2 variants
+      slot1 = 'Voix_1'; slot2 = 'Voix_2';
+      voice1 = this.VOICE_MAP[genders[0]][0];
+      voice2 = this.VOICE_MAP[genders[0]][1] || voice1;
+    }
+
+    const speakerSlot = {};
+    speakers.forEach((s, i) => {
+      if (genders.length >= 2) {
+        speakerSlot[s.name] = s.gender === 'F' ? slot1 : slot2;
+      } else {
+        speakerSlot[s.name] = i % 2 === 0 ? slot1 : slot2;
+      }
     });
 
-    const voiceList = speakers.map(s => `${s.name} (voice: ${voiceAssign[s.name]})`).join(', ');
-    const lines = dialogue.repliques.map(r => `${r.locuteur}: ${r.texte}`).join('\n');
+    const lines = dialogue.repliques.map(r => {
+      const slot = speakerSlot[r.locuteur] || slot1;
+      return `${slot}: ${r.texte}`;
+    }).join('\n');
 
     return {
-      prompt: `TTS the following dialogue. Use distinct voices for each speaker.\n${voiceList}\n\n${lines}`,
-      configs: speakers.map(s => ({
-        speaker: s.name,
-        voiceConfig: { prebuiltVoiceConfig: { voiceName: voiceAssign[s.name] } }
-      }))
+      mode: 'multi',
+      prompt: `TTS the following dialogue.\n\n${lines}`,
+      configs: [
+        { speaker: slot1, voiceConfig: { prebuiltVoiceConfig: { voiceName: voice1 } } },
+        { speaker: slot2, voiceConfig: { prebuiltVoiceConfig: { voiceName: voice2 } } }
+      ]
     };
   },
 
@@ -1373,8 +1419,8 @@ async function generateManual() {
   setProgressState('progress-audio', 'active');
 
   try {
-    const { prompt: ttsPrompt, configs } = DialogueBuilder.buildTTSPrompt(dialogue, speakers);
-    const audioBase64 = await GeminiClient.generateTTS(apiKey, ttsPrompt, configs);
+    const ttsInfo = DialogueBuilder.buildTTSPrompt(dialogue, speakers);
+    const audioBase64 = await GeminiClient.generateTTS(apiKey, ttsInfo);
     const audioUrl = AudioPlayer.load(audioBase64);
 
     const player = document.getElementById('audio-player');
@@ -1516,8 +1562,8 @@ async function generate() {
   let audioOk = false;
 
   try {
-    const { prompt: ttsPrompt, configs } = DialogueBuilder.buildTTSPrompt(dialogue, speakers);
-    const audioBase64 = await GeminiClient.generateTTS(apiKey, ttsPrompt, configs);
+    const ttsInfo = DialogueBuilder.buildTTSPrompt(dialogue, speakers);
+    const audioBase64 = await GeminiClient.generateTTS(apiKey, ttsInfo);
     const audioUrl = AudioPlayer.load(audioBase64);
 
     const player = document.getElementById('audio-player');
