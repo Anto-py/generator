@@ -34,11 +34,12 @@ h1, h2, h3, h4, .title-font {
 .page-frame {
   background: var(--retro-paper);
   border: 4px solid var(--retro-orange);
-  min-height: calc(100vh - 24px);
-  margin: 12px;
-  padding: 2rem 1rem;
+  max-width: 680px;
+  margin: 40px auto;
+  padding: 2rem 1.5rem;
   position: relative;
   overflow: hidden;
+  border-radius: 4px;
 }
 
 /* Coins floraux */
@@ -688,8 +689,8 @@ h1, h2, h3, h4, .title-font {
 .btn-add-rep:hover { background: rgba(18,118,118,0.06); }
 
 /* Responsive */
-@media (max-width: 680px) {
-  .page-frame { padding: 1.5rem 0.8rem; margin: 6px; }
+@media (max-width: 740px) {
+  .page-frame { padding: 1.5rem 0.8rem; margin: 12px; }
   .app-header h1 { font-size: 1.6rem; }
   .form-row { flex-direction: column; gap: 0; }
   .retro-btn-pill-text { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
@@ -762,7 +763,7 @@ h1, h2, h3, h4, .title-font {
 
     <!-- Key bar -->
     <div class="key-bar">
-      <button class="btn-link" onclick="forgetKey()">Oublier ma clé API</button>
+      <button class="btn-link" onclick="changeKey()">🔑 Changer de clé API</button>
     </div>
 
     <!-- Quota widget -->
@@ -1192,6 +1193,15 @@ function saveKeyAndStart() {
   hideError('key-error');
   showScreen('screen-main');
   updateQuotaUI();
+}
+
+function changeKey() {
+  // Go to key screen to re-enter, without erasing the current key
+  const current = StorageManager.getKey();
+  const inp = document.getElementById('api-key-input');
+  inp.value = current;
+  inp.type = 'text';
+  showScreen('screen-key');
 }
 
 function forgetKey() {
