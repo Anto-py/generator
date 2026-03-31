@@ -792,6 +792,9 @@ h1, h2, h3, h4, .title-font {
       <button class="mode-tab" id="tab-manual" onclick="switchMode('manual')">✎ Mon dialogue</button>
     </div>
 
+    <!-- Mode hint -->
+    <p id="mode-hint" style="font-size:0.82rem; color:rgba(13,22,23,0.55); text-align:center; margin:-0.6rem 0 1rem; line-height:1.4;"></p>
+
     <!-- Form -->
     <div class="retro-card">
       <div class="form-row">
@@ -1212,12 +1215,18 @@ function forgetKey() {
 
 let currentMode = 'generate';
 
+const MODE_HINTS = {
+  generate: '✦ L\'IA rédige un dialogue selon vos paramètres, puis le met en voix.',
+  manual:   '✎ Vous saisissez vous-même le dialogue, l\'IA se charge uniquement de la synthèse vocale.'
+};
+
 function switchMode(mode) {
   currentMode = mode;
   document.getElementById('tab-generate').classList.toggle('active', mode === 'generate');
   document.getElementById('tab-manual').classList.toggle('active', mode === 'manual');
   document.getElementById('fields-generate').style.display = mode === 'generate' ? '' : 'none';
   document.getElementById('fields-manual').style.display = mode === 'manual' ? '' : 'none';
+  document.getElementById('mode-hint').textContent = MODE_HINTS[mode];
   hideError('main-error');
   if (mode === 'manual') {
     renderManualSpeakerInputs();
@@ -1562,6 +1571,7 @@ function backToMain() {
 (function init() {
   // Render generate-mode speakers
   _renderSpeakerGrid('sel-speakers', 'speakers-grid');
+  document.getElementById('mode-hint').textContent = MODE_HINTS['generate'];
 
   const savedKey = StorageManager.getKey();
   if (savedKey) {
