@@ -1,12 +1,13 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Dialogue Studio — Générateur de dialogues pédagogiques</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
 <style>
 :root {
   --retro-teal:   #127676;
@@ -702,269 +703,236 @@ h1, h2, h3, h4, .title-font {
 <body>
 <div class="page-frame">
 <div class="container">
-
-  <!-- Header -->
-  <header class="app-header">
-    <h1>Dialogue Studio</h1>
-    <p class="subtitle">Générateur de dialogues pédagogiques</p>
-  </header>
-
-  <!-- SCREEN: API Key -->
-  <div id="screen-key" class="screen active">
-    <div class="retro-card">
-      <div class="welcome-text">
-        <h2 style="color:var(--retro-teal); font-size:1.3rem; margin-bottom:0.5rem;">Bienvenue !</h2>
-        <p>Créez des dialogues pédagogiques multilingues avec synthèse vocale, en un clic.</p>
-        <p>Il vous suffit d'une clé API Google gratuite pour commencer.</p>
-      </div>
-
-      <div class="form-group">
-        <label for="api-key-input">Votre clé API Google</label>
-        <div class="key-input-wrapper">
-          <input type="password" id="api-key-input" placeholder="Collez votre clé ici (AIza...)" autocomplete="off">
-          <button class="toggle-visibility" type="button" onclick="toggleKeyVisibility()" aria-label="Afficher/masquer la clé">👁</button>
-        </div>
-      </div>
-
-      <div style="text-align:center; margin-top:1rem;">
-        <button class="retro-btn-pill" onclick="saveKeyAndStart()">
-          <span class="retro-btn-pill-text">Commencer</span>
-          <span class="retro-btn-pill-icon">→</span>
-        </button>
-      </div>
-
-      <div id="key-error" class="error-msg" style="display:none; margin-top:1rem;"></div>
-
-      <!-- Tutorial -->
-      <div class="tutorial-panel">
-        <button class="tutorial-toggle" onclick="toggleTutorial()" type="button">
-          <span>Comment obtenir votre clé API Google gratuite ?</span>
-          <span class="arrow">▼</span>
-        </button>
-        <div class="tutorial-content" id="tutorial-content">
-          <ol>
-            <li>Rendez-vous sur <a href="https://aistudio.google.com" target="_blank" rel="noopener">aistudio.google.com</a></li>
-            <li>Connectez-vous avec votre compte Google</li>
-            <li>Cliquez sur <strong>« Get API Key »</strong> (en haut à gauche)</li>
-            <li>Cliquez sur <strong>« Create API key in new project »</strong></li>
-            <li>Copiez la clé affichée (elle commence par <code>AIza...</code>)</li>
-            <li>Collez-la dans le champ ci-dessus</li>
-          </ol>
-          <div class="security-note">
+<!-- Header -->
+<header class="app-header">
+<h1>Dialogue Studio</h1>
+<p class="subtitle">Générateur de dialogues pédagogiques</p>
+</header>
+<!-- SCREEN: API Key -->
+<div class="screen active" id="screen-key">
+<div class="retro-card">
+<div class="welcome-text">
+<h2 style="color:var(--retro-teal); font-size:1.3rem; margin-bottom:0.5rem;">Bienvenue !</h2>
+<p>Créez des dialogues pédagogiques multilingues avec synthèse vocale, en un clic.</p>
+<p>Il vous suffit d'une clé API Google gratuite pour commencer.</p>
+</div>
+<div class="form-group">
+<label for="api-key-input">Votre clé API Google</label>
+<div class="key-input-wrapper">
+<input autocomplete="off" id="api-key-input" placeholder="Collez votre clé ici (AIza...)" type="password"/>
+<button aria-label="Afficher/masquer la clé" class="toggle-visibility" onclick="toggleKeyVisibility()" type="button">👁</button>
+</div>
+</div>
+<div style="text-align:center; margin-top:1rem;">
+<button class="retro-btn-pill" onclick="saveKeyAndStart()">
+<span class="retro-btn-pill-text">Commencer</span>
+<span class="retro-btn-pill-icon">→</span>
+</button>
+</div>
+<div class="error-msg" id="key-error" style="display:none; margin-top:1rem;"></div>
+<!-- Tutorial -->
+<div class="tutorial-panel">
+<button class="tutorial-toggle" onclick="toggleTutorial()" type="button">
+<span>Comment obtenir votre clé API Google gratuite ?</span>
+<span class="arrow">▼</span>
+</button>
+<div class="tutorial-content" id="tutorial-content">
+<ol>
+<li>Rendez-vous sur <a href="https://aistudio.google.com" rel="noopener" target="_blank">aistudio.google.com</a></li>
+<li>Connectez-vous avec votre compte Google</li>
+<li>Cliquez sur <strong>« Get API Key »</strong> (en haut à gauche)</li>
+<li>Cliquez sur <strong>« Create API key in new project »</strong></li>
+<li>Copiez la clé affichée (elle commence par <code>AIza...</code>)</li>
+<li>Collez-la dans le champ ci-dessus</li>
+</ol>
+<div class="security-note">
             🔒 Votre clé reste sur votre appareil. Elle n'est jamais partagée avec un serveur tiers.
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SCREEN: Main -->
-  <div id="screen-main" class="screen">
-
-    <!-- Key bar -->
-    <div class="key-bar">
-      <button class="btn-link" onclick="changeKey()">🔑 Changer de clé API</button>
-    </div>
-
-    <!-- Quota widget -->
-    <div id="quota-widget">
-      <div class="quota-header">
-        <span class="quota-title">⚡ Quota du jour</span>
-        <span class="quota-count" id="quota-count">0 / 10</span>
-      </div>
-      <div class="quota-bar">
-        <div class="quota-bar-fill" id="quota-bar-fill" style="width:0%"></div>
-      </div>
-      <div class="quota-footer">
-        Renouvellement à 9h00 (heure de Bruxelles)<br>
-        Estimation locale — quota réel sur <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">AI Studio</a>
-      </div>
-    </div>
-
-    <div id="quota-exceeded-msg" class="error-msg" style="display:none;">
-      Vous avez atteint votre quota indicatif du jour. Revenez demain à 9h00 ou consultez votre <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">quota réel sur AI Studio</a>.
+</div>
+</div>
+</div>
+</div>
+<!-- SCREEN: Main -->
+<div class="screen" id="screen-main">
+<!-- Key bar -->
+<div class="key-bar">
+<button class="btn-link" onclick="changeKey()">🔑 Changer de clé API</button>
+</div>
+<!-- Quota widget -->
+<div id="quota-widget">
+<div class="quota-header">
+<span class="quota-title">⚡ Quota du jour</span>
+<span class="quota-count" id="quota-count">0 / 10</span>
+</div>
+<div class="quota-bar">
+<div class="quota-bar-fill" id="quota-bar-fill" style="width:0%"></div>
+</div>
+<div class="quota-footer">
+        Renouvellement à 9h00 (heure de Bruxelles)<br/>
+        Estimation locale — quota réel sur <a href="https://aistudio.google.com/apikey" rel="noopener" target="_blank">AI Studio</a>
+</div>
+</div>
+<div class="error-msg" id="quota-exceeded-msg" style="display:none;">
+      Vous avez atteint votre quota indicatif du jour. Revenez demain à 9h00 ou consultez votre <a href="https://aistudio.google.com/apikey" rel="noopener" target="_blank">quota réel sur AI Studio</a>.
       <p style="font-size:0.8rem; margin-top:0.5rem; opacity:0.7;">Ce compteur estime votre utilisation locale. Votre quota réel peut varier.</p>
-    </div>
-
-    <!-- Mode tabs -->
-    <div class="mode-tabs">
-      <button class="mode-tab active" id="tab-generate" onclick="switchMode('generate')">✦ Générer</button>
-      <button class="mode-tab" id="tab-manual" onclick="switchMode('manual')">✎ Mon dialogue</button>
-    </div>
-
-    <!-- Mode hint -->
-    <p id="mode-hint" style="font-size:0.82rem; color:rgba(13,22,23,0.55); text-align:center; margin:-0.6rem 0 1rem; line-height:1.4;"></p>
-
-    <!-- Form -->
-    <div class="retro-card">
-      <div class="form-row">
-        <div class="form-group">
-          <label for="sel-lang">Langue cible</label>
-          <select id="sel-lang">
-            <option value="Français">Français</option>
-            <option value="Anglais">Anglais</option>
-            <option value="Espagnol">Espagnol</option>
-            <option value="Arabe">Arabe</option>
-            <option value="Néerlandais">Néerlandais</option>
-            <option value="Allemand">Allemand</option>
-            <option value="Italien">Italien</option>
-            <option value="Portugais">Portugais</option>
-            <option value="Polonais">Polonais</option>
-            <option value="Russe">Russe</option>
-            <option value="Chinois">Chinois</option>
-            <option value="Japonais">Japonais</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="sel-level">Niveau CECR</label>
-          <select id="sel-level">
-            <option value="A1">A1</option>
-            <option value="A2">A2</option>
-            <option value="B1" selected>B1</option>
-            <option value="B2">B2</option>
-            <option value="C1">C1</option>
-            <option value="C2">C2</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Generate-only fields -->
-      <div id="fields-generate">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="sel-speakers">Nombre de locuteurs</label>
-            <select id="sel-speakers" onchange="_renderSpeakerGrid('sel-speakers','speakers-grid')">
-              <option value="1">1</option>
-              <option value="2" selected>2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="sel-replies">Nombre de répliques</label>
-            <select id="sel-replies">
-              <option value="4">4</option>
-              <option value="6" selected>6</option>
-              <option value="8">8</option>
-              <option value="10">10</option>
-              <option value="12">12</option>
-              <option value="16">16</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="separator"><span>❧</span></div>
-
-        <div class="form-group">
-          <label>Locuteurs</label>
-          <div class="speakers-grid" id="speakers-grid"></div>
-        </div>
-
-        <div class="separator"><span>✿</span></div>
-
-        <div class="form-group">
-          <label for="txt-consigne">Consigne libre</label>
-          <textarea id="txt-consigne" placeholder="Décrivez le thème, le contexte, les contraintes linguistiques souhaitées..."></textarea>
-        </div>
-
-        <div style="text-align:center; margin-top:1.2rem;">
-          <button class="retro-btn-pill" id="btn-generate" onclick="generate()">
-            <span class="retro-btn-pill-text">Générer le dialogue</span>
-            <span class="retro-btn-pill-icon">▶</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Manual entry fields -->
-      <div id="fields-manual" style="display:none;">
-        <div class="form-group" style="margin-bottom:0.8rem;">
-          <label for="manual-title">Titre du dialogue</label>
-          <input type="text" id="manual-title" placeholder="Ex. Au café, Chez le médecin…">
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="sel-speakers-manual">Nombre de locuteurs</label>
-            <select id="sel-speakers-manual" onchange="renderManualSpeakerInputs()">
-              <option value="1">1</option>
-              <option value="2" selected>2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="separator"><span>❧</span></div>
-
-        <div class="form-group">
-          <label>Locuteurs &amp; voix</label>
-          <div class="speakers-grid" id="speakers-grid-manual"></div>
-        </div>
-
-        <div class="separator"><span>✿</span></div>
-
-        <div class="form-group">
-          <label>Répliques</label>
-          <div class="repliques-editor" id="repliques-editor"></div>
-          <button class="btn-add-rep" onclick="addManualReplique()">+ Ajouter une réplique</button>
-        </div>
-
-        <div style="text-align:center; margin-top:1.2rem;">
-          <button class="retro-btn-pill" id="btn-voice" onclick="generateManual()">
-            <span class="retro-btn-pill-text">Mettre en voix</span>
-            <span class="retro-btn-pill-icon">🔊</span>
-          </button>
-        </div>
-      </div>
-
-      <div id="main-error" class="error-msg" style="display:none; margin-top:1rem;"></div>
-    </div>
-
-    <!-- Progress -->
-    <div class="progress-area" id="progress-area" style="display:none;">
-      <div class="progress-step waiting" id="progress-text">
-        <span class="status-icon"></span>
-        <span>Rédaction du dialogue en cours…</span>
-      </div>
-      <div class="progress-step waiting" id="progress-audio">
-        <span class="status-icon"></span>
-        <span>Synthèse des voix en cours…</span>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- SCREEN: Result -->
-  <div id="screen-result" class="screen">
-    <div class="success-msg">Votre dialogue est prêt !</div>
-
-    <div class="retro-card">
-      <div class="dialogue-container" id="dialogue-container"></div>
-    </div>
-
-    <div class="audio-area" id="audio-area" style="display:none;">
-      <audio controls id="audio-player"></audio>
-    </div>
-
-    <div id="audio-error" class="error-msg" style="display:none;">
-      La synthèse vocale a échoué. Le texte du dialogue reste disponible ci-dessus.<br>
-      <code id="audio-error-detail" style="font-size:0.78rem; opacity:0.75; word-break:break-all;"></code>
-    </div>
-
-    <div class="actions-row">
-      <button class="btn-secondary" onclick="copyDialogue()">📋 Copier</button>
-      <button class="btn-secondary" onclick="window.print()">🖨 Imprimer / PDF</button>
-      <button class="btn-secondary" id="btn-download" onclick="downloadWav()" style="display:none;">⬇ Télécharger WAV</button>
-      <button class="btn-secondary" onclick="backToMain()">← Nouveau dialogue</button>
-    </div>
-  </div>
-
+</div>
+<!-- Mode tabs -->
+<div class="mode-tabs">
+<button class="mode-tab active" id="tab-generate" onclick="switchMode('generate')">✦ Générer</button>
+<button class="mode-tab" id="tab-manual" onclick="switchMode('manual')">✎ Mon dialogue</button>
+</div>
+<!-- Mode hint -->
+<p id="mode-hint" style="font-size:0.82rem; color:rgba(13,22,23,0.55); text-align:center; margin:-0.6rem 0 1rem; line-height:1.4;"></p>
+<!-- Form -->
+<div class="retro-card">
+<div class="form-row">
+<div class="form-group">
+<label for="sel-lang">Langue cible</label>
+<select id="sel-lang">
+<option value="Français">Français</option>
+<option value="Anglais">Anglais</option>
+<option value="Espagnol">Espagnol</option>
+<option value="Arabe">Arabe</option>
+<option value="Néerlandais">Néerlandais</option>
+<option value="Allemand">Allemand</option>
+<option value="Italien">Italien</option>
+<option value="Portugais">Portugais</option>
+<option value="Polonais">Polonais</option>
+<option value="Russe">Russe</option>
+<option value="Chinois">Chinois</option>
+<option value="Japonais">Japonais</option>
+</select>
+</div>
+<div class="form-group">
+<label for="sel-level">Niveau CECR</label>
+<select id="sel-level">
+<option value="A1">A1</option>
+<option value="A2">A2</option>
+<option selected="" value="B1">B1</option>
+<option value="B2">B2</option>
+<option value="C1">C1</option>
+<option value="C2">C2</option>
+</select>
 </div>
 </div>
-
+<!-- Generate-only fields -->
+<div id="fields-generate">
+<div class="form-row">
+<div class="form-group">
+<label for="sel-speakers">Nombre de locuteurs</label>
+<select id="sel-speakers" onchange="_renderSpeakerGrid('sel-speakers','speakers-grid')">
+<option value="1">1</option>
+<option selected="" value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+</select>
+</div>
+<div class="form-group">
+<label for="sel-replies">Nombre de répliques</label>
+<select id="sel-replies">
+<option value="4">4</option>
+<option selected="" value="6">6</option>
+<option value="8">8</option>
+<option value="10">10</option>
+<option value="12">12</option>
+<option value="16">16</option>
+</select>
+</div>
+</div>
+<div class="separator"><span>❧</span></div>
+<div class="form-group">
+<label>Locuteurs</label>
+<div class="speakers-grid" id="speakers-grid"></div>
+</div>
+<div class="separator"><span>✿</span></div>
+<div class="form-group">
+<label for="txt-consigne">Consigne libre</label>
+<textarea id="txt-consigne" placeholder="Décrivez le thème, le contexte, les contraintes linguistiques souhaitées..."></textarea>
+</div>
+<div style="text-align:center; margin-top:1.2rem;">
+<button class="retro-btn-pill" id="btn-generate" onclick="generate()">
+<span class="retro-btn-pill-text">Générer le dialogue</span>
+<span class="retro-btn-pill-icon">▶</span>
+</button>
+</div>
+</div>
+<!-- Manual entry fields -->
+<div id="fields-manual" style="display:none;">
+<div class="form-group" style="margin-bottom:0.8rem;">
+<label for="manual-title">Titre du dialogue</label>
+<input id="manual-title" placeholder="Ex. Au café, Chez le médecin…" type="text"/>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label for="sel-speakers-manual">Nombre de locuteurs</label>
+<select id="sel-speakers-manual" onchange="renderManualSpeakerInputs()">
+<option value="1">1</option>
+<option selected="" value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+</select>
+</div>
+</div>
+<div class="separator"><span>❧</span></div>
+<div class="form-group">
+<label>Locuteurs &amp; voix</label>
+<div class="speakers-grid" id="speakers-grid-manual"></div>
+</div>
+<div class="separator"><span>✿</span></div>
+<div class="form-group">
+<label>Répliques</label>
+<div class="repliques-editor" id="repliques-editor"></div>
+<button class="btn-add-rep" onclick="addManualReplique()">+ Ajouter une réplique</button>
+</div>
+<div style="text-align:center; margin-top:1.2rem;">
+<button class="retro-btn-pill" id="btn-voice" onclick="generateManual()">
+<span class="retro-btn-pill-text">Mettre en voix</span>
+<span class="retro-btn-pill-icon">🔊</span>
+</button>
+</div>
+</div>
+<div class="error-msg" id="main-error" style="display:none; margin-top:1rem;"></div>
+</div>
+<!-- Progress -->
+<div class="progress-area" id="progress-area" style="display:none;">
+<div class="progress-step waiting" id="progress-text">
+<span class="status-icon"></span>
+<span>Rédaction du dialogue en cours…</span>
+</div>
+<div class="progress-step waiting" id="progress-audio">
+<span class="status-icon"></span>
+<span>Synthèse des voix en cours…</span>
+</div>
+</div>
+</div>
+<!-- SCREEN: Result -->
+<div class="screen" id="screen-result">
+<div class="success-msg">Votre dialogue est prêt !</div>
+<div class="retro-card">
+<div class="dialogue-container" id="dialogue-container"></div>
+</div>
+<div class="audio-area" id="audio-area" style="display:none;">
+<audio controls="" id="audio-player"></audio>
+</div>
+<div class="error-msg" id="audio-error" style="display:none;">
+      La synthèse vocale a échoué. Le texte du dialogue reste disponible ci-dessus.<br/>
+<code id="audio-error-detail" style="font-size:0.78rem; opacity:0.75; word-break:break-all;"></code>
+</div>
+<div class="actions-row">
+<button class="btn-secondary" onclick="copyDialogue()">📋 Copier</button>
+<button class="btn-secondary" onclick="window.print()">🖨 Imprimer / PDF</button>
+<button class="btn-secondary" id="btn-download" onclick="downloadWav()" style="display:none;">⬇ Télécharger WAV</button>
+<button class="btn-secondary" onclick="backToMain()">← Nouveau dialogue</button>
+</div>
+</div>
+</div>
+<div class="ab-attribution" style="text-align:center;margin-top:2rem;padding-top:1rem;border-top:1px solid rgba(128,128,128,0.25);font-size:0.8rem;opacity:0.65;">
+<a href="https://www.linkedin.com/in/antonin-bareau/" rel="noopener" style="font-weight:bold;color:inherit;text-decoration:none;" target="_blank">Antonin Bareau</a>
+   — 
+  <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" style="color:inherit;text-decoration:none;" target="_blank">Licence CC BY-SA 4.0</a>
+</div></div>
 <!-- Toast -->
 <div class="toast" id="toast"></div>
-
 <script>
 // ===== Storage Manager =====
 const StorageManager = {
@@ -1504,11 +1472,6 @@ function renderDialogue(dialogue) {
     html += `<div class="dialogue-bubble bubble-speaker-${cls}">
       <div class="speaker-name">${escapeHtml(r.locuteur)}</div>
       <div class="speaker-text">${escapeHtml(r.texte)}</div>
-    <div class="ab-attribution" style="text-align:center;margin-top:2rem;padding-top:1rem;border-top:1px solid rgba(128,128,128,0.25);font-size:0.8rem;opacity:0.65;">
-  <a href="https://www.linkedin.com/in/antonin-bareau/" target="_blank" rel="noopener" style="font-weight:bold;color:inherit;text-decoration:none;">Antonin Bareau</a>
-  &nbsp;&mdash;&nbsp;
-  <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">Licence CC BY-SA 4.0</a>
-</div>
 </div>`;
   });
 
@@ -1635,6 +1598,5 @@ function backToMain() {
   }
 })();
 </script>
-
 </body>
 </html>
